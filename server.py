@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import Flask, url_for, json
+from flask import Flask, url_for, json, render_template
 from flask import Response
 from flask import request
 from flask import jsonify, make_response
@@ -53,6 +53,10 @@ app.register_blueprint(static, url_prefix='/service/composition')
 
 app.register_blueprint(hateoas, url_prefix='')
 
-	
+@app.route('/')
+def homePage():
+    return render_template('index.html')
+
 if __name__ == '__main__':
     app.run(threaded=True)
+    app.run(debug=True)
