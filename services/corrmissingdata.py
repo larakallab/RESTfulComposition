@@ -36,29 +36,4 @@ def getcorrMissingData():
 
 @corrmissingdata.route('/GetCorrectedMissingData.md')	
 def getDescriptorGetCorrectedMissingData():
-	myjson = """
-	{
-	"@context": "http://localhost:5000/context.jsonld",
-	"@id": "http://localhost:5000/GetCorrectedMissingData/GetCorrectedMissingData.md",
-	"@type": "Descriptor",
-	"annotation": "",
-	"operations": [{
-		"method": "GET",
-		"expects": {
-			"data_id": "h2g:data_id"
-		},
-		"returns": {
-			"correctedmissingdata": "h2g: correctedmissingdata"
-		},
-		"statusCodes": null,
-		"annotation": "http://localhost:5000/h2gontology/corrmissingdata.owl#getcorrectmissingdata"
-	}],
-	"links": [{
-		"supportedOperations": "http-methods:POST",
-		"annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary",
-		"key": "EnergyHeatPrediction",
-		"value": "http://localhost:5000/service/PredHeatEngCons"
-	}]
-}
-	"""
-	return myjson
+	return '{"@context": "http://localhost:5000/context.jsonld","@id": "http://localhost:5000/GetCorrectedMissingData/GetCorrectedMissingData.md","@type": "Descriptor","annotation": "","operations": [{"method": "GET","expects": {"data_id": "h2g:data_id"},"returns": {"correctedmissingdata": "h2g: correctedmissingdata"},"statusCodes": null,"annotation": "http://localhost:5000/h2gontology/corrmissingdata.owl#getcorrectmissingdata"}],"links": [{"supportedOperations": "http-methods:POST","annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary","key": "EnergyHeatPrediction","value": "http://localhost:5000/service/PredHeatEngCons"}]}';

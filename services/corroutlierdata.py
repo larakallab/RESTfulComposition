@@ -36,29 +36,4 @@ def getcorrOutlierData():
 
 @corroutlierdata.route('/GetCorrectedOutliersData.md')	
 def getDescriptorGetCorrectedOutliersData():
-	myjson = """
-	{
-	"@context": "http://localhost:5000/context.jsonld",
-	"@id": "http://localhost:5000/GetCorrectedOutliersData/GetCorrectedOutliersData.md",
-	"@type": "Descriptor",
-	"annotation": "",
-	"operations": [{
-		"method": "GET",
-		"expects": {
-			"data_id": "h2g:data_id"
-		},
-		"returns": {
-			"correctedoutliersdata": "h2g: correctedoutliersdata"
-		},
-		"statusCodes": null,
-		"annotation": "http://localhost:5000/h2gontology/corroutliersdata.owl#getcorrectoutliersdata"
-	}],
-	"links": [{
-		"supportedOperations": "http-methods:POST",
-		"annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary",
-		"key": "EnergyHeatPrediction",
-		"value": "http://localhost:5000/service/PredHeatEngCons"
-	}]
-}
-	"""
-	return myjson
+	return '{"@context": "http://localhost:5000/context.jsonld","@id": "http://localhost:5000/GetCorrectedOutliersData/GetCorrectedOutliersData.md","@type": "Descriptor","annotation": "","operations": [{"method": "GET","expects": {"data_id": "h2g:data_id"},"returns": {"correctedoutliersdata": "h2g: correctedoutliersdata"},"statusCodes": null,"annotation": "http://localhost:5000/h2gontology/corroutliersdata.owl#getcorrectoutliersdata"}],"links": [{"supportedOperations": "http-methods:POST","annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary","key": "EnergyHeatPrediction","value": "http://localhost:5000/service/PredHeatEngCons"}]}';

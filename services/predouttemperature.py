@@ -19,12 +19,6 @@ from nets import *
 
 predouttemperature = Blueprint('predouttemperature', __name__,)
 
-def gen_series(n, min_val, max_val):
-	x = []
-	for i in range(0, n):
-		x.append(randint(min_val, max_val))
-	return x
-
 @predouttemperature.route('', methods=['GET', 'HEAD'])
 def getPredOutTemperature():
 	parser = reqparse.RequestParser()
@@ -32,7 +26,7 @@ def getPredOutTemperature():
 	parser.add_argument('enddate')
 	args = parser.parse_args()
 	if request.method == 'GET':
-		v = gen_series(10, 15, 26)
+		v = '30, 0, 34, 0, 34, 35, 51, 31, 33, 45'
 		resp = make_response(jsonify(data=v))
 		resp.headers['Link'] = 'http://localhost:5000/CollectPredExtTemp/CollectPredExtTemp.md'
 		return resp
@@ -44,35 +38,4 @@ def getPredOutTemperature():
 
 @predouttemperature.route('/CollectPredExtTemp.md')	
 def getDescriptorCollectPredExtTemp():
-	myjson = """
-	{
-	"@context": "http://localhost:5000/context.jsonld",
-	"@id": "http://localhost:5000/CollectPredExtTemp/CollectPredExtTemp.md",
-	"@type": "Descriptor",
-	"annotation": "",
-	"operations": [{
-		"method": "GET",
-		"expects": {
-			"startdate": "h2g:startdate",
-			"enddate": "h2g:enddate"
-		},
-		"returns": {
-			"externalpredictedtemperature": "h2g:externalpredictedtemperature"
-		},
-		"statusCodes": null,
-		"annotation": "http://localhost:5000/h2gontology/predouttemp.owl#getpredictedexternaltemperature"
-	}],
-	"links": [{
-		"supportedOperations": "http-methods:POST",
-		"annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary",
-		"key": "CorrectMissingData",
-		"value": "http://localhost:5000/service/missingdata"
-	}, {
-		"supportedOperations": "http-methods:POST",
-		"annotation": "http://localhost/resourcerelation.owl#Iscomplementary",
-		"key": "CorrectOutliersData",
-		"value": "http://localhost:5000/service/outliersdata"
-	}]
-}
-	"""
-	return myjson
+	return '{"@context": "http://localhost:5000/context.jsonld","@id": "http://localhost:5000/CollectPredExtTemp/CollectPredExtTemp.md","@type": "Descriptor","annotation": "","operations": [{"method": "GET","expects": {"startdate": "h2g:startdate","enddate": "h2g:enddate"},"returns": {"externalpredictedtemperature": "h2g:externalpredictedtemperature"},"statusCodes": null,"annotation": "http://localhost:5000/h2gontology/predouttemp.owl#getpredictedexternaltemperature"}],"links": [{"supportedOperations": "http-methods:POST","annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary","key": "CorrectMissingData","value": "http://localhost:5000/service/missingdata"},{"supportedOperations": "http-methods:POST","annotation": "http://localhost/resourcerelation.owl#Iscomplementary","key": "CorrectOutliersData","value": "http://localhost:5000/service/outliersdata"}]}';

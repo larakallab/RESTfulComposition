@@ -36,29 +36,4 @@ def getPredHeatEngCons():
 
 @heatengcons.route('/EnergyHeatConsumption.md')
 def getDescriptorEnergyHeatConsumption():
-	myjson = """
-	{
-	"@context": "http://localhost:5000/context.jsonld",
-	"@id": "http://localhost:5000/EnergyHeatConsumption/EnergyHeatConsumption.md",
-	"@type": "Descriptor",
-	"annotation": "",
-	"operations": [{
-		"method": "GET",
-		"expects": {
-			"data_id": "h2g:data_id"
-		},
-		"returns": {
-			"predictedtemperature": "h2g:predictedtemperature"
-		},
-		"statusCodes": "",
-		"annotation": "http://localhost:5000/h2gontology/energyheatcons.owl#getpredictenergyheat"
-	}],
-	"links": [{
-		"supportedOperations": "",
-		"annotation": "",
-		"key": "",
-		"value": ""
-	}]
-}
-	"""
-	return myjson
+	return '{"@context": "http://localhost:5000/context.jsonld","@id": "http://localhost:5000/EnergyHeatConsumption/EnergyHeatConsumption.md","@type": "Descriptor","annotation": "","operations": [{"method": "GET","expects": {"data_id": "h2g:data_id"},"returns": {"predictedtemperature": "h2g:predictedtemperature"},"statusCodes": "","annotation": "http://localhost:5000/h2gontology/energyheatcons.owl#getpredictenergyheat"}],"links": [{"supportedOperations": "","annotation": "","key": "","value": ""}]}';

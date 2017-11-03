@@ -40,33 +40,4 @@ def PredHeatEngCons():
 
 @predheatengcons.route('/EnergyHeatPrediction.md')
 def getDescriptorEnergyHeatPrediction():
-	myjson = """
-	{
-	"@context": "http://localhost:5000/context.jsonld",
-	"@id": "http://localhost:5000/EnergyHeatPrediction/EnergyHeatPrediction.md",
-	"@type": "Descriptor",
-	"annotation": "",
-	"operations": [{
-		"method": "POST",
-		"expects": {
-			"startdate": "h2g:startdate",
-			"enddate": "h2g:enddate",
-			"correctedmissingdata": "h2g: correctedmissingdata",
-			"correctedoutliersdata": "h2g: correctedoutliersdata",
-			"internalpredictedtemperature": "h2g:internalpredictedtemperature"
-		},
-		"returns": {
-			"data_id": "h2g:data_id"
-		},
-		"statusCodes": null,
-		"annotation": "http://localhost:5000/h2gontology/energyheatpred.owl#predictenergyheat"
-	}],
-	"links": [{
-		"supportedOperations": "http-methods:GET",
-		"annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary",
-		"key": "EnergyHeatPrediction",
-		"value": "http://localhost:5000/service/HeatEngCons"
-	}]
-}
-	"""
-	return myjson
+	return '{"@context": "http://localhost:5000/context.jsonld","@id": "http://localhost:5000/EnergyHeatPrediction/EnergyHeatPrediction.md","@type": "Descriptor","annotation": "","operations": [{"method": "POST","expects": {"startdate": "h2g:startdate","enddate": "h2g:enddate","correctedmissingdata": "h2g: correctedmissingdata","correctedoutliersdata": "h2g: correctedoutliersdata","internalpredictedtemperature": "h2g:internalpredictedtemperature"},"returns": {"data_id": "h2g:data_id"},"statusCodes": null,"annotation": "http://localhost:5000/h2gontology/energyheatpred.owl#predictenergyheat"}],"links": [{"supportedOperations": "http-methods:GET","annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary","key": "EnergyHeatPrediction","value": "http://localhost:5000/service/HeatEngCons"}]}';

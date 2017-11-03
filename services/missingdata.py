@@ -36,29 +36,4 @@ def missingData():
 
 @missingdata.route('/CorrectMissingData.md')
 def getDescriptorCorrectMissingData():
-	myjson = """
-	{
-	"@context": "http://localhost:5000/context.jsonld",
-	"@id": "http://localhost:5000/CorrectMissingData/CorrectMissingData.md",
-	"@type": "Descriptor",
-	"annotation": "",
-	"operations": [{
-		"method": "POST",
-		"expects": {
-			"externalpredictedtemperature": "h2g:externalpredictedtemperature"
-		},
-		"returns": {
-			"data_id": "h2g:data_id"
-		},
-		"statusCodes": null,
-		"annotation": "http://localhost:5000/h2gontology/missingdata.owl#correctmissingdata"
-	}],
-	"links": [{
-		"supportedOperations": "http-methods:GET",
-		"annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary",
-		"key": " CorrectMissingData",
-		"value": "http://localhost:5000/service/CorrMissingData"
-	}]
-}
-	"""
-	return myjson
+	return '{"@context": "http://localhost:5000/context.jsonld","@id": "http://localhost:5000/CorrectMissingData/CorrectMissingData.md","@type": "Descriptor","annotation": "","operations": [{"method": "POST","expects": {"externalpredictedtemperature": "h2g:externalpredictedtemperature"},"returns": {"data_id": "h2g:data_id"},"statusCodes": null,"annotation": "http://localhost:5000/h2gontology/missingdata.owl#correctmissingdata"}],"links": [{"supportedOperations": "http-methods:GET","annotation": "http://localhost:5000/resourcerelation.owl#Iscomplementary","key": " CorrectMissingData","value": "http://localhost:5000/service/CorrMissingData"}]}';
