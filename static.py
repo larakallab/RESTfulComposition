@@ -84,6 +84,7 @@ def validateComposition():
 	net = PetriNet('N')
 	a = []
 	p = []
+	transitionName = []
 	outputPlaces = []
 	live = []
 	data = json.dumps(composition)
@@ -91,7 +92,13 @@ def validateComposition():
 	tr_number = len(d['composition']['services'])
 	print (tr_number)
 	for item in d['composition']['services']:
-		name = item['name'] 
+		transitionName.append(item['name'])
+		numberName = 0
+		for n in range(len(transitionName)):
+			if ((transitionName[n] == item['name']) and (n != len(transitionName))):
+				numberName = numberName + 1 
+				name = item['name']+str(numberName)
+		numberName = 0
 		net.add_transition(Transition(name))
 		output = item['output'] 
 		a.append([name, output])
