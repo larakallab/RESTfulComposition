@@ -32,7 +32,7 @@ def getPredHeatEngCons():
 	args = parser.parse_args()
 	if request.method == 'GET':
 		v = gen_series(10, 2500, 3007)
-		resp = make_response(jsonify(data_id=v))
+		resp = make_response(jsonify(data=v))
 		resp.headers['Link'] = 'http://localhost:5000/EnergyHeatConsumption/EnergyHeatConsumption.md'
 		return resp
 	if request.method == 'HEAD':

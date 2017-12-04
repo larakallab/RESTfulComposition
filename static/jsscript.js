@@ -63,6 +63,7 @@ par+= "-"+json.composition.services[key].parameters[keyp].p4;
 a.push($.ajax({url: json.composition.services[key].url+'/'+par, type: json.composition.services[key].method, dataType: 'json', crossDomain: true, global: false, async: false, success:function(data){tmp=data;}}).responseText);
 }
 else {
+
 for (var keyp in json.composition.services[key].parameters) {
 for (i=0;i<key;i++){
 if ((Object.values(json.composition.services[key].parameters[keyp]) == json.composition.services[i].output) && (keyp==0)){
@@ -97,9 +98,9 @@ $.ajax({url: 'http://localhost:5000/service/hateoascomposition', type: 'POST', d
 }
 
 function executeComposition(){		
-$.ajax({url: 'http://localhost:5000/service/composition/execute', type: 'get', dataType: 'json', crossDomain: true, data: '{"composition_id":"4"}', success:function(data){console.log(data);}});
+$.ajax({url: 'http://localhost:5000/service/composition/execute', type: 'get', dataType: 'json', crossDomain: true, contentType: 'application/json', data: {composition_id:"9", startDate:"22102017", endDate:"23102017"}, success:function(data){console.log(data);}});
 }
 
 function validateComposition(){		
-$.ajax({url: 'http://localhost:5000/service/composition/validate', type: 'get', dataType: 'json', crossDomain: true, data: '{"composition_id":"5"}', success:function(data){console.log(data);}});
+$.ajax({url: 'http://localhost:5000/service/composition/validate', type: 'get', dataType: 'json', crossDomain: true, contentType: 'application/json', data: '{"composition_id":"5"}', success:function(data){console.log(data);}});
 }

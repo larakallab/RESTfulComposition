@@ -26,7 +26,7 @@ def getcorrOutlierData():
 	args = parser.parse_args()
 	if request.method == 'GET':
 		v = '30, 32, 34, 34, 34, 35, 32, 31, 33, 33'
-		resp = make_response(jsonify(data_id=v))
+		resp = make_response(jsonify(data=v))
 		resp.headers['Link'] = 'http://localhost:5000/GetCorrectedOutliersData/GetCorrectedOutliersData.md'
 		return resp
 	if request.method == 'HEAD':
