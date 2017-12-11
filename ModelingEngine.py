@@ -2,6 +2,7 @@
  
 from flask import Flask
 from flask import request
+from flask import abort
 import json
 import snakes.plugins
 import snakes.pnml
@@ -14,8 +15,11 @@ class ModelingEngine(object):
 		pass	
 
 	def getComposition(self):
-		return request.get_json()
-		
+		try:
+       			return request.get_json()
+		except Exception:
+         		abort(400, "The syntax of the JSON model is wrong.")
+	
 	def JSONtoPNML(self, composition):
 		net = PetriNet('N')
 		outArray = []

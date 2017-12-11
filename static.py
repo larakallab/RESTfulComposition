@@ -16,7 +16,7 @@ static = Blueprint('static', __name__,)
 def postComposition():
 	global composition; 
 	modeling = ModelingEngine()
-	composition = modeling.getComposition()
+	composition = modeling.getComposition()		
 	global outputPlaces;
 	outputPlaces = modeling.JSONtoPNML(composition)
 	return ''
