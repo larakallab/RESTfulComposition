@@ -12,13 +12,16 @@ from ExecutionEngine import ExecutionEngine
 
 static = Blueprint('static', __name__,)
 
-@static.route('/service/composition', methods=["POST"])
+@static.route('/services/composition', methods=["POST"])
 def postComposition():
 	global composition; 
 	modeling = ModelingEngine()
 	composition = modeling.getComposition()		
 	global outputPlaces;
 	outputPlaces = modeling.JSONtoPNML(composition)
+	print (outputPlaces)
+	validation = ValidationEngine()
+	validation.validateComposition(composition, outputPlaces)
 	return ''
 
 @static.route('/composition/execute')
@@ -36,13 +39,4 @@ def executeComposition():
 	execution = ExecutionEngine()
 	execution.executeComposition(composition)
 	return ''
-
-@static.route('/validate')	
-def validateComposition():
-	parser = reqparse.RequestParser()
-	parser.add_argument('composition_id')
-	#args = parser.parse_args()
-	headers = {'dataType': 'json', 'Content-Type' : 'application/json'}
-	validation = ValidationEngine()
-	validation.validateComposition(outputPlaces)
-	return ''
+	
