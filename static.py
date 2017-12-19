@@ -21,7 +21,7 @@ def postComposition():
 	outputPlaces = modeling.JSONtoPNML(composition)
 	print (outputPlaces)
 	validation = ValidationEngine()
-	validation.validateComposition(composition, outputPlaces)
+	validation.validateComposition(outputPlaces)
 	return ''
 
 @static.route('/composition/execute')

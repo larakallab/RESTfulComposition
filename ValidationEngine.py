@@ -10,13 +10,27 @@ class ValidationEngine(object):
 	def __init__(self):
 		pass	
 
-	def validateComposition(self, composition, outputPlaces):
-		Reachable = ""
-		Liveness = ""
-		singleGoal = ""
-		Report = ""
-		live = []
+	def validateComposition(self, outputPlaces):
+		Report=""
+		Reachable = self.reachability()
+		Liveness = self.liveness(outputPlaces)		
+		if (Reachable == "True" and Liveness == "True"):
+			Report=""
+		elif (Reachable == "True" and Liveness == "False"):
+			Report="Not all transitions are well linked to each other"
+		elif (Reachable == "False" and Liveness == "True"):
+			Report="Final state is not reachable"
+		else:
+			Report="Final state is not reachable \n Not all transitions are well linked to each other"
+		if Report=="":
+			print ("the composition is verified")	
+			return '1'				
+		else:
+			abort(400, Report)
+	
 		
+	def reachability(self):
+		Reachable = ""
 		paramReach = "neco-check --formula=\"F (marking(\'Goal\') = [dot])\""
 		subprocess.call(['neco-compile', '--pnml', 'composition.pnml', '-lcython'])
 		subprocess.call(['neco-explore', '--dump', 'states'])
@@ -24,7 +38,7 @@ class ValidationEngine(object):
 		subprocess.call(paramReach, shell=True, stdout=subprocess.PIPE)
 		subprocess.call(['neco-spot', 'neco_formula'])
 		fl = open("states")
-		notReach=False;
+		notReach = False
 		for i, l in enumerate(fl):
 			if "'Goal' : [dot]" in l:
 				notReach=True
@@ -33,7 +47,12 @@ class ValidationEngine(object):
 			Reachable = "True"
 		else:
 			Reachable = "False"
-		
+		return Reachable
+
+
+	def liveness(self, outputPlaces):
+		Liveness = ""
+		live = []
 		for i in outputPlaces:
 			subprocess.call(['neco-compile', '--pnml', 'composition.pnml', '-lcython'])
 			paramLive = "neco-check --formula=\"F (marking(\'"+i+"\') = [dot])\""
@@ -51,28 +70,10 @@ class ValidationEngine(object):
 		for j in live:
 			if (j != 'live'):
 				notLive=True;
-		
 		if (notLive==True):
 			Liveness = "False"
 		else:
-			Liveness = "True"
-				
-		if (Reachable == "True" and Liveness == "True"):
-			Report=""
-		elif (Reachable == "True" and Liveness == "False"):
-			Report="Not all transitions are well linked to each other"
-		elif (Reachable == "False" and Liveness == "True"):
-			Report="Final state is not reachable"
-		else:
-			Report="Final state is not reachable \n Not all transitions are well linked to each other"
-		if Report=="":
-			print ("the composition is verified")	
-			return '1'				
-		else:
-			abort(400, Report)
-	
-		
-	
-					
+			Liveness = "True"	
+		return Liveness
 		
 
