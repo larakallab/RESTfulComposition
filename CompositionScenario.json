@@ -1,98 +1,197 @@
 {
+
 	"composition": {
+		"name": "",
+		"description": "",
+		"variables": ["startDate", "endDate"],
 		"services": [{
+
 				"url": "http://localhost:5000/service/PredInTemperature",
+
 				"method": "GET",
+
 				"name": "GetPredictedInternalTemperature",
+
 				"param": [{
-						"startdate": "22062017"
+
+						"startdate": "startDate"
+
 					},
+
 					{
-						"enddate": "23062017"
+
+						"enddate": "endDate"
+
 					}
+
 				],
+
 				"output": "A"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/PredOutTemperature",
+
 				"method": "GET",
+
 				"name": "GetPredictedExternalTemperature",
+
 				"param": [{
-						"startdate": "22062017"
+
+						"startdate": "startDate"
+
 					},
+
 					{
-						"enddate": "23062017"
+
+						"enddate": "endDate"
+
 					}
+
 				],
+
 				"output": "B"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/missingdata",
+
 				"method": "POST",
+
 				"name": "missingData",
+
 				"param": [{
+
 					"data": "B"
+
 				}],
+
 				"output": "C"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/outliersdata",
+
 				"method": "POST",
+
 				"name": "outlierData",
+
 				"param": [{
+
 					"data": "B"
+
 				}],
+
 				"output": "D"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/CorrMissingData",
+
 				"method": "GET",
+
 				"name": "getcorrMissingData",
+
 				"param": [{
+
 					"data_id": "C"
+
 				}],
+
 				"output": "E"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/corrOutlierData",
+
 				"method": "GET",
+
 				"name": "getcorrOutlierData",
+
 				"param": [{
+
 					"data_id": "D"
+
 				}],
+
 				"output": "F"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/PredHeatEngCons",
+
 				"method": "POST",
+
 				"name": "PredHeatEngCons",
+
 				"param": [{
-						"startdate": "22062017"
+
+						"startdate": "startDate"
+
 					},
+
 					{
-						"enddate": "23062017"
+
+						"enddate": "endDate"
+
 					},
+
 					{
+
 						"data": "A"
+
 					},
+
 					{
+
 						"data": "E"
+
 					}, {
+
 						"data": "F"
+
 					}
+
 				],
+
 				"output": "G"
+
 			},
+
 			{
+
 				"url": "http://localhost:5000/service/HeatEngCons",
+
 				"method": "GET",
+
 				"name": "getPredHeatEngCons",
+
 				"param": [{
+
 					"data_id": "G"
+
 				}],
+
 				"output": "H"
+
 			}
+
 		],
+
 		"goal": "H"
+
 	}
+
 }
