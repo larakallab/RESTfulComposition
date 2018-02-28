@@ -48,8 +48,8 @@ app.register_blueprint(heatengcons, url_prefix='/service/HeatEngCons')
 app.register_blueprint(heatengcons, url_prefix='/EnergyHeatConsumption')
 
 app.register_blueprint(static, url_prefix='')
-app.register_blueprint(static, url_prefix='/service')
-app.register_blueprint(static, url_prefix='/service/composition')
+app.register_blueprint(static, url_prefix='')
+app.register_blueprint(static, url_prefix='/services')
 
 app.register_blueprint(hateoas, url_prefix='')
 
