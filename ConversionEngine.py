@@ -19,6 +19,37 @@ class ConversionEngine(object):
 		inputs = []
 		outputs = []
 
+		context =  '''
+					{"@vocab": "http://www.w3.org/ns/hydra/core#",
+					"schema": "http://schema.org/",
+					"ifcTC1": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_TC1/",
+					"ifcFinal": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_Final/",
+					"h2gBI": "http://hit2gap.eu/h2g/h2gBI/",
+					"h2gOcc": "http://hit2gap.eu/h2g/h2gOccupant/",
+					"h2gProp": "http://hit2gap.eu/h2g/h2gProperty/",
+					"ssn": "https://www.w3.org/TR/vocab-ssn/",
+					"qudt": "http://quadt.org/schema/qudt/",
+					"siteId": "ifcTC1:globalId_IfcRoot",
+					"buildingId": "ifcTC1:globalId_IfcRoot",
+					"floorId": "h2gBI:Floor",
+					"spaceId": "ifcTC1:globalId_IfcRoot",
+					"measureId": "ssn:SOSAResult",
+					"systemType": "ifcFinal:IfcEnergyConversionDevice",
+					"relationToSystem": "h2gBI:transports",
+					"measureType": "h2gProp:PhysicalProperty",
+					"initDate": "h2gOcc:startWorktime",
+					"endDate": "h2gOcc:endWorktime",
+					"frequency": "h2gProp:Frequency",
+					"quality": "schema:Float",
+					"Workflow": "Collection",
+					"services": "Collection",
+					"data": "schema:Text",
+					"Goal": "schema:Text",
+					"id": "schema:identifier",
+					"url": "schema:url"}
+				'''
+		compoDesc['@context'] = json.loads(context)
+	
 		compoDesc['@id']= "http://www.hit2gap.eu/services/description/automatic_id"
 		compoDesc['@type']= "composedService"
 		compoDesc['description']= compo["composition"]["description"]
@@ -62,9 +93,12 @@ class ConversionEngine(object):
 		compoDesc['operation']=operation
 
 		member = []
+		service_id=0
 		for l in compo["composition"]["services"]:
+			service_id = service_id+1
 			dmember= {}
-			dmember['@id'] = l['url']
+			dmember['@id'] = 'S'+str(service_id)
+			dmember['url'] = l['url']
 			dmember['method'] = l['method']
 			dmember['expects'] = l['param']
 			dmember['returns'] = l['output']

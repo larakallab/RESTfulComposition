@@ -11,14 +11,11 @@ class ExecutionEngine(object):
 		pass	
 
 	def executeComposition(self, compositionDesc):
-		data = json.load(compositionDesc)		
-		for item in data['Workflow']['member']:
-			for i in item['expects']:
-				print (i)
-		'''
-			
+		a = [];
+		headers = {'dataType': 'json', 'Content-Type' : 'application/json'}
+		for item in compositionDesc['Workflow']:
 			par="";
-			for i in item['param']:
+			for i in item['expects']:
 				k = list(i.keys())
 				mykey = ''.join(k)
 				l = list(i.values())
@@ -38,22 +35,21 @@ class ExecutionEngine(object):
 			print (par)
 			url = item['url']
 			if (item['method']=='GET'):
-				y = item['output']
-				x = item['output']    
+				y = item['returns']
+				x = item['returns']    
 				exec("%s = %s" % (x,2))
-				item['output'] = requests.get(url, headers=headers, data = "{"+par+"}").text;
-				a.append([y, item['output']])
+				item['returns'] = requests.get(url, headers=headers, data = "{"+par+"}").text;
+				a.append([y, item['returns']])
 			if (item['method']=='POST'):
-				y = item['output']
-				x = item['output']    
+				y = item['returns']
+				x = item['returns']    
 				exec("%s = %s" % (x,2))
-				item['output'] = requests.post(url, headers=headers, data = "{"+par+"}").text;
-				a.append([y, item['output']])
-		goal = data2['composition']['goal']
+				item['returns'] = requests.post(url, headers=headers, data = "{"+par+"}").text;
+				a.append([y, item['returns']])
+		goal = compositionDesc['Goal']
 		for j in range(len(a)):
 			if (a[j][0] == goal):
 				print (a[j][1])
-		'''
 		return ''
 
 
