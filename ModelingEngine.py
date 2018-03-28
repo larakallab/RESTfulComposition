@@ -16,9 +16,15 @@ class ModelingEngine(object):
 
 	def getComposition(self):
 		try:
-       			return request.get_json()
-		except Exception:
+			composition = request.get_json()
+		except:
          		abort(400, "The syntax of the JSON model is wrong. Possible mistakes: \n  Errors in the brackets|braces|commas|quotes \n Duplicated keys")
+		try:	
+			var = composition['composition']['goal']
+		except:
+			abort(400, "Please specify a 'goal' for the composition")
+		return composition
+		
 	
 	def JSONtoPNML(self, composition):
 		net = PetriNet('N')
@@ -50,12 +56,16 @@ class ModelingEngine(object):
 					if (mystring in outArray[j][1]):
 						net.add_input(outArray[j][0]+'output', name, Value(dot))
 						t=1;
-				if (t==0):
+				if (t==0 and mykey!= 'data'):
 					net.add_place(Place(name+""+mykey, [dot], tBlackToken))
+					net.add_input(name+""+mykey, name, Value(dot))
+				if (t==0 and mykey== 'data'):
+					net.add_place(Place(name+""+mykey, [], tBlackToken))
 					net.add_input(name+""+mykey, name, Value(dot))
 			if (output == d['composition']['goal']):
 				net.add_place(Place('Goal', [], tBlackToken))
 				net.add_output('Goal', name, Value(dot))
+				outputPlaces.append('Goal')
 			if (output != d['composition']['goal']):
 				net.add_place(Place(name+'output', [], tBlackToken))
 				net.add_output(name+'output', name, Value(dot))
@@ -64,5 +74,4 @@ class ModelingEngine(object):
 		file = open("composition.pnml","w") 
 		file.write (pnmlFile)
 		file.close()	
-		print (pnmlFile)
 		return outputPlaces

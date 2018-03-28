@@ -27,8 +27,8 @@ class ValidationEngine(object):
 			print ("Service composition is verified")	
 			return Valid				
 		else:
+			print (Report)
 			return Report
-			abort(400, Report)
 	
 		
 	def reachability(self):
@@ -44,7 +44,6 @@ class ValidationEngine(object):
 		for i, l in enumerate(fl):
 			if "'Goal' : [dot]" in l:
 				notReach=True
-
 		if (notReach==True):
 			Reachable = "True"
 		else:
@@ -68,9 +67,11 @@ class ValidationEngine(object):
 					var2 = l.partition(' ')[0]
 					if var2 == "no":
 						live.append('live')
+					else:
+						live.append('notlive')
 		notLive=False;
 		for j in live:
-			if (j != 'live'):
+			if (j == 'notlive'):
 				notLive=True;
 		if (notLive==True):
 			Liveness = "False"
@@ -80,7 +81,7 @@ class ValidationEngine(object):
 
 	def interoperability(self, composition):
 		Interoperability = 'True'
-		sparql = SPARQLWrapper("http://localhost:3030/CompoServDesModified/query")		
+		sparql = SPARQLWrapper("http://localhost:3030/27March18/query")		
 		a = [];
 		validation_arr = [];
 		validation_report = [];
@@ -116,7 +117,6 @@ class ValidationEngine(object):
 						data_input = json.loads(data_in)
 						for i in data_input["results"]["bindings"]:
 							in_arr.append(str(i["input"]["value"]))
-						#print(in_arr)
 						sparql.setQuery("""
   						PREFIX h2g: <http://www.hit2gap.eu/hit2gap_onto/>
 						PREFIX schema: <http://schema.org/> 
@@ -135,20 +135,17 @@ class ValidationEngine(object):
 						data_output = json.loads(data_out)
 						for i in data_output["results"]["bindings"]:
 							out_arr.append(str(i["output"]["value"]))
-						#print(out_arr)
-						if (('http://hit2gap.eu/h2g/h2gOccupant/startWorktime' in out_arr) and ('http://schema.org/Float' in out_arr)):
-							if ('http://schema.org/identifier' in in_arr):
-								validmatch = 'True'
-							else:				
-								validmatch = 'False'
-							validation_arr.append([validmatch, a[j][0], item['url']])
+						if ((('http://www.w3.org/ns/hydra/core#tabCollVal' in out_arr) and ('http://www.w3.org/ns/hydra/core#tabValues' in in_arr)) or (('http://www.w3.org/ns/hydra/core#tabValues' in out_arr) and ('http://www.w3.org/ns/hydra/core#tabValues' in in_arr))):
+							validmatch = 'True'
+						else:				
+							validmatch = 'False'
+						validation_arr.append([validmatch, a[j][0], item['url']])
 		for i in range(len(validation_arr)):
-			if (validation_arr[i][0] == 'True'):
-				print(validation_arr[i][1]+" and "+validation_arr[i][2]+" can be linked.")
-			else:
+			#if (validation_arr[i][0] == 'True'):
+				#print(validation_arr[i][1]+" and "+validation_arr[i][2]+" can be linked.")
+			if (validation_arr[i][0] == 'False'):
 				Interoperability = 'False'
-				print(validation_arr[i][1]+" and "+validation_arr[i][2]+" cannot be linked.")
-						
+				#print(validation_arr[i][1]+" and "+validation_arr[i][2]+" cannot be linked.")
 		return Interoperability
 		
 

@@ -5,11 +5,9 @@ from flask import Flask, json
 from flask import request
 import requests
 
-from flask_restful import reqparse
 from SPARQLWrapper import SPARQLWrapper, JSON
-from collections import OrderedDict
-import rdflib  
-from rdflib_sparql.processor import processUpdate  
+from collections import OrderedDict 
+from rdflib import Graph
 
 from ModelingEngine import ModelingEngine
 from ValidationEngine import ValidationEngine
@@ -21,7 +19,7 @@ static = Blueprint('static', __name__,)
 @static.route('/services/description', methods=['GET', 'POST'])
 def Descriptions(): 
 	if request.method == 'GET':
-		sparql = SPARQLWrapper("http://localhost:3030/CompoServDesModified/query")
+		sparql = SPARQLWrapper("http://localhost:3030/27March18/query")
 		sparql.setQuery("""
   					Select ?service ?description ?method ?inputs ?outputs
 					{
@@ -47,8 +45,8 @@ def Descriptions():
 					""")
 		sparql.setReturnFormat(JSON)
 		results = sparql.query().convert()
-		dumped_data = json.dumps(results)
-		data = json.loads(dumped_data)
+		dumped_data = json.dumps(OrderedDict(results))
+		data = json.loads(dumped_data, object_pairs_hook=OrderedDict)
 	
 		finalData = OrderedDict()
 		services = []
@@ -63,65 +61,21 @@ def Descriptions():
 			services.append(service)
 	
 		finalData['services']=services
-		return json.dumps(finalData)
+		return json.dumps(OrderedDict(finalData))
 		
 
 	if request.method == 'POST': 
 		jsonlddata = request.get_json()
-		d1 = json.dumps(jsonlddata)
-		g=rdflib.Graph()  
-		g.parse('http://localhost:3030/CompoServDesModified/data', format="turtle")  
-		g.parse(data = d1, format="json-ld") 
-		
-		qres = g.query(
-    		"""
-		Select ?member ?method ?url ?returns ?inputs ?inputValues ?goal where
-		{
-		<http://www.hit2gap.eu/services/description/automatic_id> <http://www.w3.org/ns/hydra/core#Collection> ?coll .
-		?coll <http://schema.org/Text> ?goal.
-		?coll <http://www.w3.org/ns/hydra/core#member> ?member.
-   		?member <http://www.w3.org/ns/hydra/core#method> ?method .
-  		?member <http://schema.org/url> ?url .
-  		?member <http://www.w3.org/ns/hydra/core#returns> ?returns .
-  
-  		{SELECT ?member (GROUP_CONCAT(?input;separator="|") AS ?inputs) (GROUP_CONCAT(?inputValue;separator="|") AS ?inputValues) 
-		WHERE {
-		{?member <http://www.w3.org/ns/hydra/core#expects> ?expect.
-  		?expect ?input ?inputValue}
-		}
-		group by ?member }
-		}
-		""")
-		workflow = {}
-		member = []
-		compoDesc= OrderedDict()
-		for row in qres:
-			service = {}
-			service['url']= row.url
-			service['method']= row.method
-			service['returns']= row.returns
-			expects = []
-			exp={}
-			if ('|' in row.inputs):
-				inputs = str(row.inputs)
-				arr_inputs = inputs.split("|")
-				input_val = str(row.inputValues)
-				arr_input_val = input_val.split("|")
-				for i in range(len(arr_inputs)):
-					exp[arr_inputs[i]] = arr_input_val[i]
-				expects.append(exp)
-				service['expects']= expects
-			else:
-				exp[row.inputs] = row.inputValues
-				expects.append(exp)
-			service['expects']= expects
-			member.append(service)	
-		compoDesc['Workflow']= member
-		compoDesc['Goal']= row.goal
-		jsonld = json.dumps(compoDesc)
-		print (jsonld)
-		#execution = ExecutionEngine()
-		#execution.executeComposition(jsonld)						
+		d1 = json.dumps(OrderedDict(jsonlddata))
+		g = Graph()
+		g.parse(data=d1, format='json-ld')
+
+		queryString = "INSERT DATA { "+g.serialize(format='nt')+"}" 
+		sparql = SPARQLWrapper("http://localhost:3030/27March18/update")
+
+		sparql.setQuery(queryString) 
+		sparql.method = 'POST'
+		sparql.query()		
 		return '' 
 			
 
@@ -132,96 +86,108 @@ def postComposition():
 	composition = modeling.getComposition()		
 	global outputPlaces
 	outputPlaces = modeling.JSONtoPNML(composition)
-	print (outputPlaces)
 	validation = ValidationEngine()
-	validation.validateComposition(outputPlaces, composition)
-	conversion = ConversionEngine()
-	global JSONLD
-	JSONLD = conversion.convertComposition(composition)
-	headers = {'dataType': 'json', 'Content-Type' : 'application/json'}
-	requests.post('http://localhost:5000/services/description', headers=headers, data = JSONLD)
+	valid = validation.validateComposition(outputPlaces, composition)
+	if valid == 'True':
+		conversion = ConversionEngine()
+		global JSONLD
+		JSONLD = conversion.convertComposition(composition)
+		headers = {'dataType': 'json', 'Content-Type' : 'application/json'}
+		requests.post('http://localhost:5000/services/description', headers=headers, data = JSONLD)
 	return ''
 
 
-@static.route('/compositionexec')
-def executeComposition():
-	'''
-	g=rdflib.Graph()  
-	g.parse('http://localhost:3030/CompoServDesModified/data', format="turtle") 
-	qres = g.query(
-    	"""
-	Select ?member ?method ?url ?return ?inputs ?inputValues where
-	{
-	<http://www.hit2gap.eu/services/description/automatic_id> <http://www.w3.org/ns/hydra/core#Collection> ?coll .
-	?coll <http://www.w3.org/ns/hydra/core#member> ?member.
-   	?member <http://www.w3.org/ns/hydra/core#method> ?method .
-  	?member <http://schema.org/url> ?url .
-  	?member <http://www.w3.org/ns/hydra/core#returns> ?return .
-  
-  	{SELECT ?member (GROUP_CONCAT(?input;separator="|") AS ?inputs) (GROUP_CONCAT(?inputValue;separator="|") AS ?inputValues) 
-	WHERE {
-	{?member <http://www.w3.org/ns/hydra/core#expects> ?expect.
-  	?expect ?input ?inputValue}
-	}
-	group by ?member }
+@static.route('/compositionexec/<compositionId>')
+def executeComposition(compositionId):
+	variables = request.get_json()
+	sparql = SPARQLWrapper("http://localhost:3030/27March18")
+	sparql.setQuery("""
+		Select  ?url ?method ?returns ?inputs ?inputValues where
+		{
+ 		{
+    		<http://localhost:3030/27March18/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#Collection> ?c .
+		?c <http://www.w3.org/ns/hydra/core#member> ?member.
+   		?member <http://www.w3.org/ns/hydra/core#method> ?method .
+  		?member <http://schema.org/url> ?url .
+  		?member <http://www.w3.org/ns/hydra/core#returns> ?returns .
+  		{SELECT ?member (GROUP_CONCAT(?input;separator="|") AS ?inputs) (GROUP_CONCAT(?inputValue;separator="|") AS ?inputValues) 
+		WHERE {
+		{?member <http://www.w3.org/ns/hydra/core#expects> ?expect.
+  		?expect ?input ?inputValue}
+		}
+		group by ?member }
+		}
+		}
+		""")
+	sparql.method = 'GET'
+	sparql.setReturnFormat(JSON)
+	results = sparql.query().convert()
+	dumpedresults = json.dumps(OrderedDict(results))
+	jsonresults = json.loads(dumpedresults, object_pairs_hook=OrderedDict)
+
+	workflow = {}
+	member = []
+	compoDesc= OrderedDict()
+
+	for i in jsonresults["results"]["bindings"]:
+		service = {}
+		service['url']= i["url"]["value"]
+		service['method']= i["method"]["value"]
+		service['returns']= i["returns"]["value"]
+		expects = []
+		if ('|' in i["inputs"]["value"]):
+				inputs = str(i["inputs"]["value"])
+				arr_inputs = inputs.split("|")
+				input_val = str(i["inputValues"]["value"])
+				arr_input_val = input_val.split("|")
+				for i in range(len(arr_inputs)):
+					exp={}
+					exp[arr_inputs[i]] = arr_input_val[i]
+					expects.append(exp)
+				service['expects']= expects
+		else:
+			exp={}
+			exp[i["inputs"]["value"]] = i["inputValues"]["value"]
+			expects.append(exp)
+		service['expects']= expects
+		member.append(service)	
+	compoDesc['Workflow']= member
+	sparql2 = SPARQLWrapper("http://localhost:3030/27March18")
+	sparql2.setQuery("""
+	Select  ?goal where
+		{
+    		<http://localhost:3030/27March18/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#Collection> ?coll .
+  		?coll <http://schema.org/Text> ?goal
+		}
+	""")
+	sparql2.method = 'GET'
+	sparql2.setReturnFormat(JSON)
+	results2 = sparql2.query().convert()
+	dumpedresults2 = json.dumps(OrderedDict(results2))
+	jsonresults2 = json.loads(dumpedresults2, object_pairs_hook=OrderedDict)
+	compoDesc['Goal']= jsonresults2["results"]["bindings"][0]["goal"]["value"]
+	jsonldexec = json.dumps(OrderedDict(compoDesc))
+	
+	var_arr=[]
+	sparql = SPARQLWrapper("http://localhost:3030/27March18")
+	sparql.setQuery("""
+	SELECT ?input  
+	WHERE
+	{<http://localhost:3030/27March18/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#operation> ?op .
+	?op <http://www.w3.org/ns/hydra/core#expects> ?expects .
+	?expects ?input ?inval
 	}
 	""")
-	print ('passed')
-	for row in qres:
-    		print(row)
-	print ('finish')
-	'''
-	'''
-	There will be a call to the core platform API according to composition id in order to retrieve the composition description
-	For the moment we are using the composition description presented in a file on the server 'CompositionDescription.jsonld'
-	'''
-	#compositionDesc = open("CompositionDescription.jsonld")
-	data = """
-{
-	"Goal": "E",
-	"Workflow": [{
-		"expects": [{
-			"http://schema.org/Text": "C"
-		}],
-		"method": "GET",
-		"returns": "D",
-		"url": "http://localhost:5000/conversion"
-	}, {
-		"expects": [{
-			"http://hit2gap.eu/h2g/h2gOccupant/endWorktime": "endDate",
-			"http://hit2gap.eu/h2g/h2gOccupant/startWorktime": "initDate",
-			"http://hit2gap.eu/h2g/h2gProperty/PhysicalProperty": "internal temperature"
-		}],
-		"method": "GET",
-		"returns": "A",
-		"url": "http://localhost:5000/getmeasure"
-	}, {
-		"expects": [{
-			"http://schema.org/Text": "A"
-		}],
-		"method": "GET",
-		"returns": "B",
-		"url": "http://localhost:5000/conversion"
-	}, {
-		"expects": [{
-			"http://schema.org/Text": "B"
-		}],
-		"method": "GET",
-		"returns": "E",
-		"url": "http://localhost:5000/alignement"
-	}, {
-		"expects": [{
-			"http://hit2gap.eu/h2g/h2gOccupant/endWorktime": "endDate",
-			"http://hit2gap.eu/h2g/h2gOccupant/startWorktime": "initDate",
-			"http://hit2gap.eu/h2g/h2gProperty/PhysicalProperty": "external temperature"
-		}],
-		"method": "GET",
-		"returns": "C",
-		"url": "http://localhost:5000/getmeasure"
-	}]
-}
-"""
+	sparql.method = 'GET'
+	sparql.setReturnFormat(JSON)
+	results = sparql.query().convert()
+	dumpedresults = json.dumps(OrderedDict(results))
+	jsonresults = json.loads(dumpedresults)
+	for i in jsonresults["results"]["bindings"]:
+		var = i["input"]["value"].split('#')
+		var_arr.append(var[1])
 	execution = ExecutionEngine()
-	execution.executeComposition(data)
+	#variables = [["var_initDate", "26-03-2018 12:00:00"], ["var_endDate", "27-03-2018 12:00:00"]]
+	execution.executeComposition(jsonldexec, var_arr, variables)
 	return ''
 	

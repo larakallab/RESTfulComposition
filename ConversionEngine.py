@@ -1,56 +1,105 @@
 #!/usr/bin/env python
  
 from flask import Flask, json
-from flask import abort
 from collections import OrderedDict
 from SPARQLWrapper import SPARQLWrapper, JSON
+from collections import OrderedDict
 
 class ConversionEngine(object):
 
 	def __init__(self):
 		pass	
 
-
 	def convertComposition(self, composition):
-		data = json.dumps(composition)
-		compo = json.loads(data)
+		data = json.dumps(OrderedDict(composition))
+		compo = json.loads(data, object_pairs_hook=OrderedDict)
 		compoDesc= OrderedDict()
 		operation = []
 		inputs = []
 		outputs = []
 
 		context =  '''
-					{"@vocab": "http://www.w3.org/ns/hydra/core#",
-					"schema": "http://schema.org/",
-					"ifcTC1": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_TC1/",
-					"ifcFinal": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_Final/",
-					"h2gBI": "http://hit2gap.eu/h2g/h2gBI/",
-					"h2gOcc": "http://hit2gap.eu/h2g/h2gOccupant/",
-					"h2gProp": "http://hit2gap.eu/h2g/h2gProperty/",
-					"ssn": "https://www.w3.org/TR/vocab-ssn/",
-					"qudt": "http://quadt.org/schema/qudt/",
-					"siteId": "ifcTC1:globalId_IfcRoot",
-					"buildingId": "ifcTC1:globalId_IfcRoot",
-					"floorId": "h2gBI:Floor",
-					"spaceId": "ifcTC1:globalId_IfcRoot",
-					"measureId": "ssn:SOSAResult",
-					"systemType": "ifcFinal:IfcEnergyConversionDevice",
-					"relationToSystem": "h2gBI:transports",
-					"measureType": "h2gProp:PhysicalProperty",
-					"initDate": "h2gOcc:startWorktime",
-					"endDate": "h2gOcc:endWorktime",
-					"frequency": "h2gProp:Frequency",
-					"quality": "schema:Float",
-					"Workflow": "Collection",
-					"services": "Collection",
-					"data": "schema:Text",
-					"Goal": "schema:Text",
-					"id": "schema:identifier",
-					"url": "schema:url"}
+					{
+	"@vocab": "http://www.w3.org/ns/hydra/core#",
+	"schema": "http://schema.org/",
+	"ifcTC1": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_TC1/",
+	"ifcFinal": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_Final/",
+	"h2gBI": "http://hit2gap.eu/h2g/h2gBI/",
+	"h2gOcc": "http://hit2gap.eu/h2g/h2gOccupant/",
+	"h2gProp": "http://hit2gap.eu/h2g/h2gProperty/",
+	"ssn": "https://www.w3.org/TR/vocab-ssn/",
+	"qudt": "http://quadt.org/schema/qudt/",
+	"measureId": "ssn:SOSAResult",
+	"timestamp": "schema:DateTime",
+	"initDate": "schema:startDate",
+	"endDate": "schema:endDate",
+	"updatedDate": "schema:DateTime",
+	"frequency": "h2gProp:Frequency",
+	"unit": "qudt:Unit",
+	"quality": "schema:Float",
+	"Workflow": "Collection",
+	"services": "Collection",
+	"data": "schema:Text",
+	"Goal": "schema:Text",
+	"id": "schema:identifier",
+	"url": "schema:url",
+	"acronym": "schema:Text",
+	"value": "schema:Float",
+	"tabCollVal": {
+		"@id": "tabCollVal",
+		"@container": "@set",
+		"@values": [{
+				"@type": "quality"
+			},
+			{
+				"@type": "timestamp"
+			},
+			{
+				"@type": "updatedDate"
+			},
+			{
+				"@type": "value"
+			}
+		]
+	},
+	"tabValues": {
+		"@id": "tabValues",
+		"@container": "@set",
+		"@values": [{
+				"@type": "timestamp"
+			},
+			{
+				"@type": "value"
+			}
+		]
+	},
+	"tabValues2": {
+		"@id": "tabValues2",
+		"@container": "@set",
+		"@values": [{
+				"@type": "timestamp"
+			},
+			{
+				"@type": "value"
+			}
+		]
+	},
+	"tabTimestamp": {
+		"@id": "tabTimestamp",
+		"@container": "@set",
+		"@values": [{
+				"@type": "initDate"
+			},
+			{
+				"@type": "endDate"
+			}
+		]
+	}
+}
 				'''
 		compoDesc['@context'] = json.loads(context)
 	
-		compoDesc['@id']= "http://www.hit2gap.eu/services/description/automatic_id"
+		compoDesc['@id']= "http://localhost:3030/27March18/newcomposition10"
 		compoDesc['@type']= "composedService"
 		compoDesc['description']= compo["composition"]["description"]
 		compoDesc['title']= compo["composition"]["title"]
@@ -72,7 +121,7 @@ class ConversionEngine(object):
 		d['expects']=expects
 		for i in compo["composition"]["services"]:
 			if (i['output']==compo["composition"]["goal"]):
-				sparql = SPARQLWrapper("http://localhost:3030/CompoServDesModified/query")
+				sparql = SPARQLWrapper("http://localhost:3030/27March18/query")
 				sparql.setQuery("""
   		 				SELECT ?output 
 						WHERE
@@ -82,8 +131,8 @@ class ConversionEngine(object):
 						""")
 				sparql.setReturnFormat(JSON)
 				results = sparql.query().convert()
-				dumped_data = json.dumps(results)
-				data_result = json.loads(dumped_data)
+				dumped_data = json.dumps(OrderedDict(results))
+				data_result = json.loads(dumped_data, object_pairs_hook=OrderedDict)
 				for i in data_result["results"]["bindings"]:
 					ret={}
 					ret[str(i["output"]["value"])]=""
@@ -97,7 +146,6 @@ class ConversionEngine(object):
 		for l in compo["composition"]["services"]:
 			service_id = service_id+1
 			dmember= {}
-			dmember['@id'] = 'S'+str(service_id)
 			dmember['url'] = l['url']
 			dmember['method'] = l['method']
 			dmember['expects'] = l['param']
@@ -110,6 +158,5 @@ class ConversionEngine(object):
 
 		compoDesc['Workflow']= fmember
 
-		jsonld = json.dumps(compoDesc)
-		print (jsonld)
+		jsonld = json.dumps(OrderedDict(compoDesc))
 		return jsonld		

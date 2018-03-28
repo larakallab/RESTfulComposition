@@ -22,14 +22,15 @@ def gen_series(n, min_val, max_val):
  	return x
 
 @alignement.route('', methods=['GET', 'HEAD'])
-def alignement():
-	datavalues1 = request.args.get('data1')
-	datavalues2 = request.args.get('data2')
-	dataaligned=[]
+def alignement0():
+	#dataid = request.args.get('dataid')
+	#startdate = request.args.get('startdate')
+	#enddate = request.args.get('enddate')
+	data = request.get_json()
+	print (data)
 	if request.method == 'GET':
-		for j in range(len(datavalues)):
-			dataaligned[j]= [int(datavalues1)+1, int(datavalues2)+1]
-		resp = make_response(jsonify(data=dataaligned))
+		v = gen_series (5, 25, 30) 
+		resp = make_response(jsonify(data=v))
 		return resp
 	
 	

@@ -22,10 +22,9 @@ def gen_series(n, min_val, max_val):
  	return x
 
 @getmeasure.route('', methods=['GET', 'HEAD'])
-def getMeasure():
-	startdate = request.args.get('startdate')
-	enddate = request.args.get('enddate')
-	measure = request.args.get('measure')
+def getmeasure0():
+	data = request.get_json()
+	print (data)
 	if request.method == 'GET':
 		v = gen_series(10, 18, 24)
 		resp = make_response(jsonify(data=v))

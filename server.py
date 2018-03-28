@@ -34,9 +34,9 @@ from hateoas import hateoas
 
 app = Flask(__name__)
 
-app.register_blueprint(predintemperature, url_prefix='/getmeasure')
-app.register_blueprint(predintemperature, url_prefix='/conversion')
-app.register_blueprint(predintemperature, url_prefix='/alignement')
+app.register_blueprint(getmeasure, url_prefix='/getmeasure')
+app.register_blueprint(conversion, url_prefix='/conversion')
+app.register_blueprint(alignement, url_prefix='/alignment')
 app.register_blueprint(predintemperature, url_prefix='/service/PredInTemperature')
 app.register_blueprint(predintemperature, url_prefix='/CollectPredIntTemp')
 app.register_blueprint(predouttemperature, url_prefix='/service/PredOutTemperature')

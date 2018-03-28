@@ -22,12 +22,12 @@ def gen_series(n, min_val, max_val):
  	return x
 
 @conversion.route('', methods=['GET', 'HEAD'])
-def conversion():
-	datavalues = request.args.get('data')
+def conversion0():
+	data = request.get_json()
+	print (data)
 	if request.method == 'GET':
-		for j in range(len(datavalues)):
-			datavalues[j]= (int(datavalues[j])*1.8) + 32
-		resp = make_response(jsonify(data=datavalues))
+		v = gen_series (5, 25, 30) 
+		resp = make_response(jsonify(data=v))
 		return resp
 	
 	
