@@ -19,7 +19,7 @@ static = Blueprint('static', __name__,)
 @static.route('/services/description', methods=['GET', 'POST'])
 def Descriptions(): 
 	if request.method == 'GET':
-		sparql = SPARQLWrapper("http://localhost:3030/27March18/query")
+		sparql = SPARQLWrapper("http://localhost:3030/03Ap08/query")
 		sparql.setQuery("""
   					Select ?service ?description ?method ?inputs ?outputs
 					{
@@ -71,7 +71,7 @@ def Descriptions():
 		g.parse(data=d1, format='json-ld')
 
 		queryString = "INSERT DATA { "+g.serialize(format='nt')+"}" 
-		sparql = SPARQLWrapper("http://localhost:3030/27March18/update")
+		sparql = SPARQLWrapper("http://localhost:3030/03Ap08/update")
 
 		sparql.setQuery(queryString) 
 		sparql.method = 'POST'
@@ -100,12 +100,12 @@ def postComposition():
 @static.route('/compositionexec/<compositionId>')
 def executeComposition(compositionId):
 	variables = request.get_json()
-	sparql = SPARQLWrapper("http://localhost:3030/27March18")
+	sparql = SPARQLWrapper("http://localhost:3030/03Ap08")
 	sparql.setQuery("""
 		Select  ?url ?method ?returns ?inputs ?inputValues where
 		{
  		{
-    		<http://localhost:3030/27March18/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#Collection> ?c .
+    		<http://localhost:5000/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#Collection> ?c .
 		?c <http://www.w3.org/ns/hydra/core#member> ?member.
    		?member <http://www.w3.org/ns/hydra/core#method> ?method .
   		?member <http://schema.org/url> ?url .
@@ -152,11 +152,11 @@ def executeComposition(compositionId):
 		service['expects']= expects
 		member.append(service)	
 	compoDesc['Workflow']= member
-	sparql2 = SPARQLWrapper("http://localhost:3030/27March18")
+	sparql2 = SPARQLWrapper("http://localhost:3030/03Ap08")
 	sparql2.setQuery("""
 	Select  ?goal where
 		{
-    		<http://localhost:3030/27March18/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#Collection> ?coll .
+    		<http://localhost:5000/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#Collection> ?coll .
   		?coll <http://schema.org/Text> ?goal
 		}
 	""")
@@ -169,11 +169,11 @@ def executeComposition(compositionId):
 	jsonldexec = json.dumps(OrderedDict(compoDesc))
 	
 	var_arr=[]
-	sparql = SPARQLWrapper("http://localhost:3030/27March18")
+	sparql = SPARQLWrapper("http://localhost:3030/03Ap08")
 	sparql.setQuery("""
 	SELECT ?input  
 	WHERE
-	{<http://localhost:3030/27March18/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#operation> ?op .
+	{<http://localhost:5000/"""+compositionId+"""> <http://www.w3.org/ns/hydra/core#operation> ?op .
 	?op <http://www.w3.org/ns/hydra/core#expects> ?expects .
 	?expects ?input ?inval
 	}
@@ -183,6 +183,7 @@ def executeComposition(compositionId):
 	results = sparql.query().convert()
 	dumpedresults = json.dumps(OrderedDict(results))
 	jsonresults = json.loads(dumpedresults)
+	print (jsonresults)
 	for i in jsonresults["results"]["bindings"]:
 		var = i["input"]["value"].split('#')
 		var_arr.append(var[1])

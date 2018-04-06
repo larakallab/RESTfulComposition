@@ -81,7 +81,7 @@ class ValidationEngine(object):
 
 	def interoperability(self, composition):
 		Interoperability = 'True'
-		sparql = SPARQLWrapper("http://localhost:3030/27March18/query")		
+		sparql = SPARQLWrapper("http://localhost:3030/03Ap08/query")		
 		a = [];
 		validation_arr = [];
 		validation_report = [];

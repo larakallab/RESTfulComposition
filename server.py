@@ -28,8 +28,25 @@ from services.corrmissingdata import corrmissingdata
 from services.corroutlierdata import corroutlierdata
 from services.predheatengcons import predheatengcons
 from services.heatengcons import heatengcons
+
+from servicesDesc.ATC1 import getairtemp
+from servicesDesc.ATC2 import collectairtemp
+from servicesDesc.CTC1 import getclimtemp
+from servicesDesc.CTC2 import collectclimtemp
+from servicesDesc.MVD1 import missvaldetection
+from servicesDesc.MVD2 import missvaldet
+from servicesDesc.MVI1 import missvalinterpolation
+from servicesDesc.MVI2 import missvalint
+from servicesDesc.OVD1 import outvaldetection
+from servicesDesc.OVD2 import outvaldet
+from servicesDesc.OVI1 import outvalinterpolation
+from servicesDesc.OVI2 import outvalint
+from servicesDesc.BEDP1 import predheatengcons
+from servicesDesc.BEDP2 import predheateng
+
 from static import static
 from hateoas import hateoas
+from discovery_enhanced import discovery
 
 
 app = Flask(__name__)
@@ -49,16 +66,48 @@ app.register_blueprint(corrmissingdata, url_prefix='/service/CorrMissingData')
 app.register_blueprint(corrmissingdata, url_prefix='/GetCorrectedMissingData')
 app.register_blueprint(corroutlierdata, url_prefix='/service/corrOutlierData')
 app.register_blueprint(corroutlierdata, url_prefix='/GetCorrectedOutliersData')
-app.register_blueprint(predheatengcons, url_prefix='/service/PredHeatEngCons')
-app.register_blueprint(predheatengcons, url_prefix='/EnergyHeatPrediction')
+#app.register_blueprint(predheatengcons, url_prefix='/service/PredHeatEngCons')
+#app.register_blueprint(predheatengcons, url_prefix='/EnergyHeatPrediction')
 app.register_blueprint(heatengcons, url_prefix='/service/HeatEngCons')
 app.register_blueprint(heatengcons, url_prefix='/EnergyHeatConsumption')
+
+app.register_blueprint(getairtemp, url_prefix='/resource/getairtemperature')
+app.register_blueprint(getairtemp, url_prefix='/resourceDescription')
+app.register_blueprint(collectairtemp, url_prefix='/resource/collectairtemperature')
+app.register_blueprint(collectairtemp, url_prefix='/resourceDescription')
+app.register_blueprint(getclimtemp, url_prefix='/resource/getclimtemperature')
+app.register_blueprint(getclimtemp, url_prefix='/resourceDescription')
+app.register_blueprint(collectclimtemp, url_prefix='/resource/collectclimtemperature')
+app.register_blueprint(collectclimtemp, url_prefix='/resourceDescription')
+app.register_blueprint(missvaldetection, url_prefix='/resource/missvaldetection')
+app.register_blueprint(missvaldetection, url_prefix='/resourceDescription')
+app.register_blueprint(missvaldet, url_prefix='/resource/missvaldet')
+app.register_blueprint(missvaldet, url_prefix='/resourceDescription')
+app.register_blueprint(outvaldetection, url_prefix='/resource/outvaldetection')
+app.register_blueprint(outvaldetection, url_prefix='/resourceDescription')
+app.register_blueprint(outvaldet, url_prefix='/resource/outvaldet')
+app.register_blueprint(outvaldet, url_prefix='/resourceDescription')
+app.register_blueprint(missvalinterpolation, url_prefix='/resource/missvalinterpolation')
+app.register_blueprint(missvalinterpolation, url_prefix='/resourceDescription')
+app.register_blueprint(missvalint, url_prefix='/resource/missvalint')
+app.register_blueprint(missvalint, url_prefix='/resourceDescription')
+app.register_blueprint(outvalinterpolation, url_prefix='/resource/outvalinterpolation')
+app.register_blueprint(outvalinterpolation, url_prefix='/resourceDescription')
+app.register_blueprint(outvalint, url_prefix='/resource/outvalint')
+app.register_blueprint(outvalint, url_prefix='/resourceDescription')
+app.register_blueprint(predheatengcons, url_prefix='/resource/predheatengcons')
+app.register_blueprint(predheatengcons, url_prefix='/resourceDescription')
+app.register_blueprint(predheateng, url_prefix='/resource/predheateng')
+app.register_blueprint(predheateng, url_prefix='/resourceDescription')
+
 
 app.register_blueprint(static, url_prefix='')
 app.register_blueprint(static, url_prefix='')
 app.register_blueprint(static, url_prefix='/services')
 
 app.register_blueprint(hateoas, url_prefix='')
+
+app.register_blueprint(discovery, url_prefix='')
 
 @app.route('/')
 def homePage():

@@ -99,7 +99,7 @@ class ConversionEngine(object):
 				'''
 		compoDesc['@context'] = json.loads(context)
 	
-		compoDesc['@id']= "http://localhost:3030/27March18/newcomposition10"
+		compoDesc['@id']= "http://localhost:5000/newcomposition2"
 		compoDesc['@type']= "composedService"
 		compoDesc['description']= compo["composition"]["description"]
 		compoDesc['title']= compo["composition"]["title"]
@@ -121,7 +121,7 @@ class ConversionEngine(object):
 		d['expects']=expects
 		for i in compo["composition"]["services"]:
 			if (i['output']==compo["composition"]["goal"]):
-				sparql = SPARQLWrapper("http://localhost:3030/27March18/query")
+				sparql = SPARQLWrapper("http://localhost:3030/03Ap08/query")
 				sparql.setQuery("""
   		 				SELECT ?output 
 						WHERE
