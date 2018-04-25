@@ -1,0 +1,280 @@
+{
+	"@context": {
+		"@vocab": "http://www.w3.org/ns/hydra/core#",
+		"schema": "http://schema.org/",
+		"ifcTC1": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_TC1/",
+		"ifcFinal": "http://www.buildingsmart-tech.org/ifcOWL/IFC2X3_Final/",
+		"h2gBI": "http://hit2gap.eu/h2g/h2gBI/",
+		"h2gOcc": "http://hit2gap.eu/h2g/h2gOccupant/",
+		"h2gProp": "http://hit2gap.eu/h2g/h2gProperty/",
+		"ssn": "https://www.w3.org/TR/vocab-ssn/",
+		"qudt": "http://quadt.org/schema/qudt/",
+		"measureId": "ssn:SOSAResult",
+		"timestamp": "schema:DateTime",
+		"initDate": "schema:startDate",
+		"endDate": "schema:endDate",
+		"updatedDate": "schema:DateTime",
+		"frequency": "h2gProp:Frequency",
+		"unit": "qudt:Unit",
+		"quality": "schema:Float",
+		"Workflow": "Collection",
+		"services": "Collection",
+		"data": "schema:Text",
+		"Goal": "schema:Text",
+		"id": "schema:identifier",
+		"url": "schema:url",
+		"acronym": "schema:Text",
+		"value":"schema:Float",
+		"tabCollVal": {
+     			 "@id": "tabCollVal",
+         			 "@container" : "@set",
+          			 "@values" : [
+				 {"@type" : "quality"},
+              				 {"@type" : "timestamp"},
+				 {"@type" :  "updatedDate"},
+				 {"@type" :  "value"}]
+       		 },
+		"tabValues":   {
+"@id": "tabValues",
+         			"@container" : "@set",
+          			"@values" : [
+				{"@type" :  "timestamp"},
+				{"@type" :  "value"} ]
+       		 },
+		"tabValues2":   {
+"@id": "tabValues2",
+         			"@container" : "@set",
+          			"@values" : [
+				{"@type" :  "timestamp"},
+				{"@type" :  "value"} ]
+       		 },
+		"tabTimestamp":   {
+"@id": "tabTimestamp",
+         			"@container" : "@set",
+          			"@values" : [
+				{"@type" :  "initDate"},
+				{"@type": "endDate"} ]
+       		 }
+	},
+	"services": [{
+			"@id": "http://localhost:5000/getmeasure",
+			"@type": "dataCollectionService",
+			"description": "This service allows data collection",
+			"title": "Get Measures",
+			"operation": [{
+				"method": "GET",
+				"expects": {
+						"measureId": "",
+						"initDate": "",
+						"endDate": ""
+					},
+				"returns": {"tabCollVal": [""]},
+				"acronym": ""
+			}],
+			"Workflow": ""
+		},
+{
+
+			"@id": "http://www.hit2gap.eu/h2g/blankdetection",
+			"@type": "preprocessingService",
+			"description": "This service detects the missing values from collected data measures",
+			"title": "Blanks Detection",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""]},
+				"returns":{"tabTimestamp": [""]},
+				"acronym": ""
+			}],
+			"Workflow": ""
+		},
+	{
+
+			"@id": "http://www.hit2gap.eu/h2g/outlierdetection",
+			"@type": "preprocessingService",
+			"description": "This service detects outlier values from collected data measures",
+			"title": "Outliers Detection",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""]},
+				"returns": {"tabTimestamp": [""]},
+				"acronym": ""
+			}],
+			"Workflow": ""
+		},
+		{
+"@id": "http://www.hit2gap.eu/h2g/datainterpolation",
+			"@type": "preprocessingService",
+			"description": "This service interpolates on blanks/outliers",
+			"title": "Data Interpolation",
+			"operation": [{
+				"method": "GET",
+				"expects":  { "tabTimestamp":[""],
+					         "tabValues": [""]},
+				"returns": { "tabValues": [""]},
+				"acronym": ""
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/sumdata",
+			"@type": "preprocessingService",
+			"description": "Sum data over a period ",
+			"title": "Sum Data",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""]},
+				"returns": 
+					{
+						"value": ""
+					},
+				"acronym": ""
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/substractdata",
+			"@type": "preprocessingService",
+			"description": "Subtract data over a period",
+			"title": "Subtract Data",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""]},
+				"returns": 
+					{
+						"value": ""
+					}, 
+				"acronym": ""
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/compmeandata",
+			"@type": "preprocessingService",
+			"description": "Compute mean value over a period",
+			"title": "Compute Mean Value ",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""]},
+				"returns": 
+					{
+						"value": ""
+					},
+				"acronym": ""				
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/compmediandata",
+			"@type": "preprocessingService",
+			"description": "Compute median value over a period ",
+			"title": "Compute Median Value ",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""]},
+				"returns": 
+					{
+						"value": ""
+					},
+				"acronym": ""						
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/datapercentage",
+			"@type": "preprocessingService",
+			"description": "Compute data percentage",
+			"title": "Compute data percentage",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""],
+				"tabValues2": [],
+				"initDate": "",
+				"endDate": ""},
+				"returns": 
+					{
+						"value": ""
+					},
+				"acronym": ""						
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/datamultiplication",
+			"@type": "preprocessingService",
+			"description": "Data Multiplication",
+			"title": "Data Multiplication",
+			"operation": [{
+				"method": "GET",
+				"expects":  { "tabValues": [""],
+					"tabValues2": [""]
+					}, 
+				"returns": {"tabValues": [""]},
+				"acronym": ""						
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/disaggregate",
+			"@type": "preprocessingService",
+			"description": "Data Disaggregation",
+			"title": "Data Disaggregation",
+			"operation": [{
+				"method": "GET",
+				"expects": {
+					"tabValues": [""]},
+				"returns": 
+					{"tabValues": [""]},
+				"acronym": ""		
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://www.hit2gap.eu/h2g/aggregate",
+			"@type": "preprocessingService",
+			"description": "Data Aggregation",
+			"title": "Data Aggregation",
+			"operation": [{
+				"method": "GET",
+				"expects": {
+					"tabValues": [""]},
+				"returns": 
+				{"tabValues": [""]},
+				"acronym": ""		
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://localhost:5000/alignment",
+			"@type": "preprocessingService",
+			"description": "Align single time-series data on the same frequency",
+			"title": "Data Alignment",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""],
+					"frequency": ""
+				},
+				"returns": 
+					{"tabValues": [""]},
+				"acronym": ""		
+			}],
+			"Workflow": ""
+		},
+		{
+			"@id": "http://localhost:5000/conversion",
+			"@type": "preprocessingService",
+			"description": "Convert data measures",
+			"title": "Data Conversion",
+			"operation": [{
+				"method": "GET",
+				"expects": {"tabValues": [""],
+					"unit": ""
+				},
+				"returns": 
+					{"tabValues": [""]},
+				"acronym": ""						
+			}],
+			"Workflow": ""
+		}
+	]
+}
+
