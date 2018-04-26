@@ -185,7 +185,8 @@ def executeComposition(compositionId):
 	jsonresults = json.loads(dumpedresults)
 	print (jsonresults)
 	for i in jsonresults["results"]["bindings"]:
-		var = i["input"]["value"].split('#')
+		#var = i["input"]["value"].split('#')
+		var = i["input"]["value"].rsplit('/', 1)[-1]
 		var_arr.append(var[1])
 	execution = ExecutionEngine()
 	#variables = [["var_initDate", "26-03-2018 12:00:00"], ["var_endDate", "27-03-2018 12:00:00"]]
